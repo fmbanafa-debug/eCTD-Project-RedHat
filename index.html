@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCTD Sync - Software Launch & Execution Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            redhat: '#EE0000',
+                            replit: '#F26202',
+                            ahoy: '#00A896',
+                            salesforce: '#00A1E0',
+                            dark: '#0F172A',
+                            card: '#1E293B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card-hover {
+            transition: all 0.25s ease-in-out;
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 via-orange-500 to-blue-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-red-500/20">
+                    <i class="fa-solid font-bold fa-cube"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg text-white tracking-tight flex items-center gap-2">
+                        eCTD Sync <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30">Pharma Go-Live</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Automated FDA/EMA Drug Registration Software</p>
+                </div>
+            </div>
+
+            <!-- Global Actions & Export/Import -->
+            <div class="flex items-center space-x-3">
+                <button onclick="exportData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-3 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-download text-slate-400"></i> Export
+                </button>
+                <label class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-3 rounded-lg border border-slate-700 transition cursor-pointer flex items-center gap-1.5">
+                    <i class="fa-solid fa-upload text-slate-400"></i> Import
+                    <input type="file" id="importFileInput" onchange="importData(event)" class="hidden" accept=".json">
+                </label>
+                <button onclick="resetTracker()" class="text-xs bg-red-950/40 hover:bg-red-900/50 text-red-400 font-medium py-2 px-3 rounded-lg border border-red-800/40 transition">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+
+        <!-- Executive Summary Banner -->
+        <div class="mb-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-800 p-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-10 -top-10 w-64 h-64 bg-red-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                <div class="space-y-2 max-w-2xl">
+                    <span class="text-xs font-semibold tracking-wider text-blue-400 uppercase">Strategic Launch Architecture</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Pharma Software Commercialization</h2>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Executing eCTD Sync launch by building GxP-compliant hosting on <strong class="text-red-400">Red Hat</strong>, engineering code rapidly on <strong class="text-orange-400">Replit</strong>, automating founder operations with <strong class="text-teal-400">Ahoy AI</strong>, and capturing enterprise accounts inside <strong class="text-sky-400">Salesforce</strong>.
+                    </p>
+                </div>
+
+                <!-- Global Progress Dashboard Card -->
+                <div class="glass-card p-5 rounded-xl flex items-center space-x-6 min-w-[280px]">
+                    <div class="relative w-24 h-24 flex items-center justify-center">
+                        <canvas id="overallProgressChart" width="96" height="96"></canvas>
+                        <div class="absolute text-center">
+                            <span id="overallPercentage" class="text-xl font-extrabold text-white">0%</span>
+                            <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Ready</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs text-slate-400 font-medium">Execution Score</p>
+                        <h4 id="taskRatio" class="text-lg font-bold text-white">0 / 16 Completed</h4>
+                        <div class="inline-flex items-center text-xs text-emerald-400 font-semibold gap-1 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            <i class="fa-solid fa-shield-halved"></i> GxP Audit Ready
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4-Layer Hierarchy Interactive Tabs Header -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <button onclick="switchTab('redhat')" id="tab-redhat" class="tab-btn active glass-card p-4 rounded-xl text-left border-l-4 border-l-brand-redhat transition flex flex-col justify-between">
+                <div class="flex items-center justify-between w-full mb-2">
+                    <span class="text-xs font-bold text-red-400 uppercase">Step 1: Foundation</span>
+                    <i class="fa-solid fa-server text-red-500"></i>
+                </div>
+                <div class="font-bold text-white text-base">Red Hat Enterprise</div>
+                <div class="text-[11px] text-slate-400 mt-1">FDA & GxP Compliance Vault</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-redhat" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </button>
+
+            <button onclick="switchTab('replit')" id="tab-replit" class="tab-btn glass-card p-4 rounded-xl text-left border-l-4 border-l-brand-replit transition flex flex-col justify-between opacity-70 hover:opacity-100">
+                <div class="flex items-center justify-between w-full mb-2">
+                    <span class="text-xs font-bold text-orange-400 uppercase">Step 2: Engine Room</span>
+                    <i class="fa-solid fa-code text-orange-500"></i>
+                </div>
+                <div class="font-bold text-white text-base">Replit AI Engine</div>
+                <div class="text-[11px] text-slate-400 mt-1">XML & eCTD Code Creation</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-replit" class="bg-orange-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </button>
+
+            <button onclick="switchTab('ahoy')" id="tab-ahoy" class="tab-btn glass-card p-4 rounded-xl text-left border-l-4 border-l-brand-ahoy transition flex flex-col justify-between opacity-70 hover:opacity-100">
+                <div class="flex items-center justify-between w-full mb-2">
+                    <span class="text-xs font-bold text-teal-400 uppercase">Step 3: Operations</span>
+                    <i class="fa-solid fa-robot text-teal-500"></i>
+                </div>
+                <div class="font-bold text-white text-base">Ahoy AI Assistant</div>
+                <div class="text-[11px] text-slate-400 mt-1">Automated Lead Operations</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-ahoy" class="bg-teal-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </button>
+
+            <button onclick="switchTab('salesforce')" id="tab-salesforce" class="tab-btn glass-card p-4 rounded-xl text-left border-l-4 border-l-brand-salesforce transition flex flex-col justify-between opacity-70 hover:opacity-100">
+                <div class="flex items-center justify-between w-full mb-2">
+                    <span class="text-xs font-bold text-sky-400 uppercase">Step 4: Revenue Target</span>
+                    <i class="fa-solid fa-cloud text-sky-500"></i>
+                </div>
+                <div class="font-bold text-white text-base">Salesforce Plugin</div>
+                <div class="text-[11px] text-slate-400 mt-1">Pharma Ecosystem Integration</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-salesforce" class="bg-sky-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </button>
+        </div>
+
+        <!-- TAB CONTENT SECTION -->
+        <div id="tabContentContainer" class="space-y-6">
+
+            <!-- STEP 1: RED HAT TAB -->
+            <div id="content-redhat" class="tab-pane">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Strategy Overview Card -->
+                        <div class="glass-card p-6 rounded-2xl border-t-4 border-t-red-600">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-cat text-red-500"></i> Step 1: Red Hat Security & Compliance Foundation
+                                    </h3>
+                                    <p class="text-slate-400 text-xs mt-1">Establishing regulatory credibility with air-gapped security for pre-approval drug formulas.</p>
+                                </div>
+                                <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1 rounded-full border border-red-500/20">Critical Shield</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+                                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                                    <span class="text-xs text-red-400 font-semibold block">Target Regulations</span>
+                                    <span class="text-sm text-slate-200 font-medium">FDA 21 CFR Part 11 / GxP / HIPAA</span>
+                                </div>
+                                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                                    <span class="text-xs text-red-400 font-semibold block">Primary Architecture</span>
+                                    <span class="text-sm text-slate-200 font-medium">Red Hat OpenShift & RHEL Air-gapped</span>
+                                </div>
+                            </div>
+
+                            <!-- Execution Checklist -->
+                            <div class="mt-6 space-y-3">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Milestone Execution Checklist</h4>
+                                
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rh_1')">
+                                    <input type="checkbox" id="rh_1" class="mt-1 accent-red-600 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rh_1')">
+                                    <div>
+                                        <label for="rh_1" class="font-semibold text-white text-sm cursor-pointer">Architect Hybrid Cloud & On-Premises OpenShift Blueprint</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Deploy Red Hat OpenShift containers to allow private enterprise data center deployment for risk-averse pharma clients.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rh_2')">
+                                    <input type="checkbox" id="rh_2" class="mt-1 accent-red-600 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rh_2')">
+                                    <div>
+                                        <label for="rh_2" class="font-semibold text-white text-sm cursor-pointer">Configure FDA 21 CFR Part 11 Audit Logging & Access Control</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Enforce cryptographic electronic signatures, timestamping, and strict RBAC inside RHEL kernel modules.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rh_3')">
+                                    <input type="checkbox" id="rh_3" class="mt-1 accent-red-600 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rh_3')">
+                                    <div>
+                                        <label for="rh_3" class="font-semibold text-white text-sm cursor-pointer">Execute Simulated Air-Gapped Network Deployment</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Verify eCTD Sync operates without external internet connectivity to ensure zero data leak of proprietary drug structures.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rh_4')">
+                                    <input type="checkbox" id="rh_4" class="mt-1 accent-red-600 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rh_4')">
+                                    <div>
+                                        <label for="rh_4" class="font-semibold text-white text-sm cursor-pointer">Compile Regulatory Trust Package & SOC2 Compliance Docs</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Assemble the Red Hat security validation packet to hand directly to Pharma CISO and Quality Assurance teams.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Toolkit & Investor Messaging -->
+                    <div class="space-y-6">
+                        <div class="glass-card p-5 rounded-xl border border-red-500/20">
+                            <h4 class="text-sm font-bold text-red-400 flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-bullhorn"></i> Investor / CISO Pitch Deck Talking Point
+                            </h4>
+                            <div class="bg-slate-900/90 p-4 rounded-lg text-xs text-slate-300 italic leading-relaxed border border-slate-800">
+                                "Pharma companies won't upload unapproved drug formulas to a public web app. By building eCTD Sync on Red Hat Enterprise Linux and OpenShift, our software runs completely inside the client's private air-gapped server room—instantly clearing FDA 21 CFR Part 11 security audits."
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-5 rounded-xl">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Red Hat Layer Metrics</h4>
+                            <div class="space-y-3 text-xs">
+                                <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                                    <span class="text-slate-400">Security Standard</span>
+                                    <span class="text-emerald-400 font-bold">GxP / HIPAA Compliant</span>
+                                </div>
+                                <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                                    <span class="text-slate-400">Deployment Type</span>
+                                    <span class="text-slate-200 font-semibold">Air-gapped / Private Cloud</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-400">Audit Status</span>
+                                    <span class="text-orange-400 font-semibold">Self-Assessment Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: REPLIT TAB -->
+            <div id="content-replit" class="tab-pane hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass-card p-6 rounded-2xl border-t-4 border-t-orange-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-code text-orange-500"></i> Step 2: Replit Rapid Engineering & Prototyping
+                                    </h3>
+                                    <p class="text-slate-400 text-xs mt-1">Accelerating software dev loops to construct eCTD XML validation algorithms without high upfront capital.</p>
+                                </div>
+                                <span class="bg-orange-500/10 text-orange-400 text-xs font-bold px-3 py-1 rounded-full border border-orange-500/20">Speed Engine</span>
+                            </div>
+
+                            <!-- Execution Checklist -->
+                            <div class="mt-6 space-y-3">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Engineering Milestones</h4>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rep_1')">
+                                    <input type="checkbox" id="rep_1" class="mt-1 accent-orange-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rep_1')">
+                                    <div>
+                                        <label for="rep_1" class="font-semibold text-white text-sm cursor-pointer">Build eCTD XML Structure Generator in Replit</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Use Replit AI Agent to code strict eCTD v3.2.2 / v4.0 XML backbone generators according to ICH specifications.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rep_2')">
+                                    <input type="checkbox" id="rep_2" class="mt-1 accent-orange-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rep_2')">
+                                    <div>
+                                        <label for="rep_2" class="font-semibold text-white text-sm cursor-pointer">Develop Module 1-5 PDF Document Validator</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Program automated file parsing routines to verify hyperlinking, bookmarking, and fonts across regional submission dossiers.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rep_3')">
+                                    <input type="checkbox" id="rep_3" class="mt-1 accent-orange-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rep_3')">
+                                    <div>
+                                        <label for="rep_3" class="font-semibold text-white text-sm cursor-pointer">Construct Multi-Region Regulatory Validation Parser</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Integrate FDA, EMA, Health Canada, and PMDA validation rules into a fast real-time compliance checker.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('rep_4')">
+                                    <input type="checkbox" id="rep_4" class="mt-1 accent-orange-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('rep_4')">
+                                    <div>
+                                        <label for="rep_4" class="font-semibold text-white text-sm cursor-pointer">Simulate High-Volume Drug Dossier Packaging</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Stress-test 50GB+ submission packages in sandbox environments to ensure performance under heavy data loads.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="glass-card p-5 rounded-xl border border-orange-500/20">
+                            <h4 class="text-sm font-bold text-orange-400 flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-microchip"></i> Feature Development Roadmap
+                            </h4>
+                            <div class="space-y-2 text-xs text-slate-300">
+                                <div class="p-2.5 rounded bg-slate-900/60 border border-slate-800">
+                                    <span class="font-bold text-orange-400 block">Phase 1: Module 1 Regional XML</span>
+                                    <span>Automate local country submission metadata creation.</span>
+                                </div>
+                                <div class="p-2.5 rounded bg-slate-900/60 border border-slate-800">
+                                    <span class="font-bold text-slate-400 block">Phase 2: Automated Hyperlink Integrity</span>
+                                    <span>Scan millions of PDF references for broken links.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: AHOY AI TAB -->
+            <div id="content-ahoy" class="tab-pane hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass-card p-6 rounded-2xl border-t-4 border-t-teal-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-robot text-teal-500"></i> Step 3: Ahoy AI Automated Operations
+                                    </h3>
+                                    <p class="text-slate-400 text-xs mt-1">Eliminating manual overhead to keep founder focus on regulatory stakeholders and enterprise sales.</p>
+                                </div>
+                                <span class="bg-teal-500/10 text-teal-400 text-xs font-bold px-3 py-1 rounded-full border border-teal-500/20">Autopilot Hub</span>
+                            </div>
+
+                            <!-- Execution Checklist -->
+                            <div class="mt-6 space-y-3">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Operations Milestones</h4>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('ah_1')">
+                                    <input type="checkbox" id="ah_1" class="mt-1 accent-teal-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('ah_1')">
+                                    <div>
+                                        <label for="ah_1" class="font-semibold text-white text-sm cursor-pointer">Configure Ahoy AI Auto-Interaction Logging</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Automate email and conference meeting transcript processing into structured lead intelligence without manual data entry.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('ah_2')">
+                                    <input type="checkbox" id="ah_2" class="mt-1 accent-teal-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('ah_2')">
+                                    <div>
+                                        <label for="ah_2" class="font-semibold text-white text-sm cursor-pointer">Setup Intelligent Post-Conference Follow-up Triggers</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Trigger customized eCTD Sync demo invitations immediately after meeting pharma VP Regulatory Affairs executives.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('ah_3')">
+                                    <input type="checkbox" id="ah_3" class="mt-1 accent-teal-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('ah_3')">
+                                    <div>
+                                        <label for="ah_3" class="font-semibold text-white text-sm cursor-pointer">Automate Regulatory Advisory Meeting Scheduling</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Synchronize founder calendar slots across multiple time zones for FDA/EMA technical consultation calls.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('ah_4')">
+                                    <input type="checkbox" id="ah_4" class="mt-1 accent-teal-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('ah_4')">
+                                    <div>
+                                        <label for="ah_4" class="font-semibold text-white text-sm cursor-pointer">Establish Automated Lead Scoring Matrix</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Score potential clients automatically based on pipeline drug phases (Phase I-III) and submission urgency.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="glass-card p-5 rounded-xl border border-teal-500/20">
+                            <h4 class="text-sm font-bold text-teal-400 flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-clock font-bold"></i> Efficiency Gain Index
+                            </h4>
+                            <div class="p-3 bg-slate-900/80 rounded-lg text-xs space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Manual Admin Hours Saved:</span>
+                                    <span class="text-teal-400 font-bold">18 hrs/week</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Follow-up Speed:</span>
+                                    <span class="text-teal-400 font-bold">&lt; 15 mins</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: SALESFORCE TAB -->
+            <div id="content-salesforce" class="tab-pane hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass-card p-6 rounded-2xl border-t-4 border-t-sky-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-cloud text-sky-500"></i> Step 4: Salesforce Enterprise Integration
+                                    </h3>
+                                    <p class="text-slate-400 text-xs mt-1">Embedding eCTD Sync directly where pharma companies store molecule and clinical trial data.</p>
+                                </div>
+                                <span class="bg-sky-500/10 text-sky-400 text-xs font-bold px-3 py-1 rounded-full border border-sky-500/20">Enterprise Ecosystem</span>
+                            </div>
+
+                            <!-- Execution Checklist -->
+                            <div class="mt-6 space-y-3">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Enterprise Distribution Milestones</h4>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('sf_1')">
+                                    <input type="checkbox" id="sf_1" class="mt-1 accent-sky-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('sf_1')">
+                                    <div>
+                                        <label for="sf_1" class="font-semibold text-white text-sm cursor-pointer">Build Salesforce Health Cloud REST API Data Connector</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Develop secure API adapters to extract molecule metadata and trial records directly into eCTD format.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('sf_2')">
+                                    <input type="checkbox" id="sf_2" class="mt-1 accent-sky-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('sf_2')">
+                                    <div>
+                                        <label for="sf_2" class="font-semibold text-white text-sm cursor-pointer">Create "One-Click eCTD Export" Salesforce Lightning Component</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Design a native UI button inside Salesforce dashboard for instant FDA submission package compiling.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('sf_3')">
+                                    <input type="checkbox" id="sf_3" class="mt-1 accent-sky-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('sf_3')">
+                                    <div>
+                                        <label for="sf_3" class="font-semibold text-white text-sm cursor-pointer">Submit Application to Salesforce AppExchange</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Pass Salesforce security review to gain official listing in the enterprise B2B AppExchange marketplace.</p>
+                                    </div>
+                                </div>
+
+                                <div class="task-item bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-start gap-3 cursor-pointer hover:border-slate-700" onclick="toggleTask('sf_4')">
+                                    <input type="checkbox" id="sf_4" class="mt-1 accent-sky-500 w-4 h-4 cursor-pointer" onclick="event.stopPropagation(); toggleTask('sf_4')">
+                                    <div>
+                                        <label for="sf_4" class="font-semibold text-white text-sm cursor-pointer">Launch Co-Selling Campaign with Salesforce Health Account Reps</label>
+                                        <p class="text-slate-400 text-xs mt-0.5">Partner with enterprise account executives to position eCTD Sync as the regulatory completion layer.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="glass-card p-5 rounded-xl border border-sky-500/20">
+                            <h4 class="text-sm font-bold text-sky-400 flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-handshake"></i> Value Proposition
+                            </h4>
+                            <p class="text-xs text-slate-300 leading-relaxed italic">
+                                "Instead of forcing pharma executives to learn new software, eCTD Sync meets them inside Salesforce where they already live. One click transforms clinical records into official FDA submission packages."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Value Flow Diagram -->
+        <div class="mt-10 glass-card p-6 rounded-2xl border border-slate-800">
+            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-diagram-project text-blue-400"></i> eCTD Sync Ecosystem Integration Flow
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+                <!-- Red Hat -->
+                <div class="bg-slate-900/90 p-4 rounded-xl border border-red-500/30 relative">
+                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider block">Security Layer</span>
+                    <h5 class="font-bold text-white text-sm mt-1">Red Hat OpenShift</h5>
+                    <p class="text-[11px] text-slate-400 mt-2">Protects sensitive drug data with air-gapped compliance.</p>
+                </div>
+                <!-- Replit -->
+                <div class="bg-slate-900/90 p-4 rounded-xl border border-orange-500/30 relative">
+                    <span class="text-[10px] font-bold text-orange-400 uppercase tracking-wider block">Dev Engine</span>
+                    <h5 class="font-bold text-white text-sm mt-1">Replit Prototypes</h5>
+                    <p class="text-[11px] text-slate-400 mt-2">Generates eCTD XML structure and PDF validators.</p>
+                </div>
+                <!-- Ahoy AI -->
+                <div class="bg-slate-900/90 p-4 rounded-xl border border-teal-500/30 relative">
+                    <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider block">Automation</span>
+                    <h5 class="font-bold text-white text-sm mt-1">Ahoy AI Assistant</h5>
+                    <p class="text-[11px] text-slate-400 mt-2">Handles lead capture and automated follow-ups.</p>
+                </div>
+                <!-- Salesforce -->
+                <div class="bg-slate-900/90 p-4 rounded-xl border border-sky-500/30 relative">
+                    <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block">Revenue Channel</span>
+                    <h5 class="font-bold text-white text-sm mt-1">Salesforce Health</h5>
+                    <p class="text-[11px] text-slate-400 mt-2">Exports live clinical data straight into eCTD format.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>eCTD Sync &copy; Strategic Business Execution Portal</div>
+            <div class="flex items-center gap-4">
+                <span class="text-slate-400">Status: <strong class="text-emerald-400 font-semibold">Active Tracker</strong></span>
+                <span>|</span>
+                <span class="text-slate-400">GxP / FDA 21 CFR Part 11 Aligned</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Application Logic -->
+    <script>
+        // State schema definition
+        const stateKey = 'ectd_sync_execution_state_v1';
+        
+        let trackerState = {
+            tasks: {
+                rh_1: false, rh_2: false, rh_3: false, rh_4: false,
+                rep_1: false, rep_2: false, rep_3: false, rep_4: false,
+                ah_1: false, ah_2: false, ah_3: false, ah_4: false,
+                sf_1: false, sf_2: false, sf_3: false, sf_4: false
+            }
+        };
+
+        let overallChart = null;
+
+        // Load persisted state on startup
+        window.onload = function() {
+            loadState();
+            initChart();
+            updateUI();
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem(stateKey);
+            if (saved) {
+                try {
+                    trackerState = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Failed to parse saved state", e);
+                }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(stateKey, JSON.stringify(trackerState));
+        }
+
+        function toggleTask(id) {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                trackerState.tasks[id] = !trackerState.tasks[id];
+                checkbox.checked = trackerState.tasks[id];
+                saveState();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Update checkboxes
+            Object.keys(trackerState.tasks).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.checked = trackerState.tasks[id];
+                }
+            });
+
+            // Calculate category percentages
+            const categories = {
+                redhat: ['rh_1', 'rh_2', 'rh_3', 'rh_4'],
+                replit: ['rep_1', 'rep_2', 'rep_3', 'rep_4'],
+                ahoy: ['ah_1', 'ah_2', 'ah_3', 'ah_4'],
+                salesforce: ['sf_1', 'sf_2', 'sf_3', 'sf_4']
+            };
+
+            let totalCompleted = 0;
+            const totalTasks = Object.keys(trackerState.tasks).length;
+
+            Object.keys(categories).forEach(cat => {
+                const keys = categories[cat];
+                const completed = keys.filter(k => trackerState.tasks[k]).length;
+                totalCompleted += completed;
+                const percentage = Math.round((completed / keys.length) * 100);
+                
+                const bar = document.getElementById(`bar-${cat}`);
+                if (bar) {
+                    bar.style.width = `${percentage}%`;
+                }
+            });
+
+            // Update overall score metrics
+            const overallPercent = Math.round((totalCompleted / totalTasks) * 100);
+            document.getElementById('overallPercentage').innerText = `${overallPercent}%`;
+            document.getElementById('taskRatio').innerText = `${totalCompleted} / ${totalTasks} Completed`;
+
+            // Update Doughnut Chart
+            if (overallChart) {
+                overallChart.data.datasets[0].data = [totalCompleted, totalTasks - totalCompleted];
+                overallChart.update();
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('overallProgressChart').getContext('2d');
+            overallChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [0, 16],
+                        backgroundColor: ['#10B981', '#334155'],
+                        borderWidth: 0,
+                        hoverOffset: 2
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function switchTab(tabId) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            
+            // Deactivate tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('opacity-70');
+            });
+
+            // Show selected pane and activate button
+            const selectedPane = document.getElementById(`content-${tabId}`);
+            if (selectedPane) {
+                selectedPane.classList.remove('hidden');
+            }
+
+            const selectedBtn = document.getElementById(`tab-${tabId}`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+                selectedBtn.classList.remove('opacity-70');
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trackerState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `eCTD_Sync_Progress_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.tasks) {
+                        trackerState = parsed;
+                        saveState();
+                        updateUI();
+                    }
+                } catch(err) {
+                    console.error("Invalid JSON format", err);
+                }
+            };
+            if (event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0]);
+            }
+        }
+
+        function resetTracker() {
+            Object.keys(trackerState.tasks).forEach(key => {
+                trackerState.tasks[key] = false;
+            });
+            saveState();
+            updateUI();
+        }
+    </script>
+</body>
+</html>
