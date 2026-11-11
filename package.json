@@ -1,0 +1,22 @@
+{
+"name": "ectd-sync-workbench",
+"version": "1.0.0",
+"description": "Global Live Collaborative Pharma Workbench & eCTD XML Validator",
+"main": "index.html",
+"type": "module",
+"scripts": {
+"dev": "vercel dev",
+"deploy": "vercel --prod"
+},
+"keywords": [
+"eCTD",
+"Pharma",
+"FDA",
+"EMA",
+"RedHat",
+"OpenShift",
+"Vercel"
+],
+"author": "eCTD Sync Team",
+"license": "MIT"
+}
