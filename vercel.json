@@ -1,29 +1,12 @@
 {
-"version": 2,
-"public": true,
-"headers": [
+"rewrites": [
+{
+"source": "/api/(.)",
+"destination": "/api/$1"
+},
 {
 "source": "/(.)",
-"headers": [
-{
-"key": "X-Frame-Options",
-"value": "ALLOWALL"
-},
-{
-"key": "Access-Control-Allow-Origin",
-"value": ""
-}
-]
-}
-],
-"routes": [
-{
-"src": "/api/gemini",
-"dest": "/api/gemini.js"
-},
-{
-"src": "/(.*)",
-"dest": "/$1"
+"destination": "/index.html"
 }
 ]
 }
