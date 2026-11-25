@@ -5,6 +5,4 @@ export default {
     extend: {}
   },
   plugins: []
-};@tailwind base;
-@tailwind components;
-@tailwind utilities;
+};
