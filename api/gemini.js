@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function: POST /api/gemini
  * Reads process.env.GEMINI_API_KEY securely on the backend server so your
- * prepaid Google AI Studio key is never exposed in the React client bundle.
+ * prepaid Google AI Studio key is never exposed in the browser bundle.
  * Enforces a strict 50MB payload ceiling.
  */
 
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
   }
 
-  // Strict 50MB Payload Limit Guard
+  // Strict 50MB Payload Limit Guard to protect monthly prepaid token budget
   const contentLength = req.headers['content-length'];
   const maxBytes = 50 * 1024 * 1024;
   if (contentLength && parseInt(contentLength, 10) > maxBytes) {
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       {
         parts: [
           {
-            text: `[Active Stakeholder Role: ${roleContext || 'Regulatory QA'}]\n\n${prompt}`
+            text: `[Learner / Stakeholder Discipline: ${roleContext || 'Regulatory QA'}]\n\n${prompt}`
           }
         ]
       }
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
     systemInstruction: {
       parts: [
         {
-          text: 'You are eCTD Sync Regulatory & Enterprise Architect: an expert in ICH eCTD v3.2.2/v4.0 XML DTD schemas, FDA 21 CFR Part 11 validation, and Red Hat OpenShift air-gapped pharmaceutical infrastructure. Provide concise, actionable technical guidance.'
+          text: 'You are an educational Pharmaceutical eCTD (ICH M2/M8 v3.2.2 & v4.0) and Red Hat OpenShift Enterprise Architect. Explain regulatory rules clearly so overseas developers, UX designers, Red Hat engineers, and regulatory specialists understand both the regulatory "Why" and the practical implementation steps.'
         }
       ]
     }
